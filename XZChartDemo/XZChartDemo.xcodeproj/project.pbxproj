@@ -16,6 +16,7 @@
 		E93ACE071D6AFEFC005F8A83 /* XZChartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E93ACE061D6AFEFC005F8A83 /* XZChartViewController.m */; };
 		E93ACE0A1D6B013C005F8A83 /* XZLineChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = E93ACE091D6B013C005F8A83 /* XZLineChartView.m */; };
 		E9BE1CAD1D6EF40F0058823D /* XZAxisCoordinateConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BE1CAC1D6EF40F0058823D /* XZAxisCoordinateConfig.m */; };
+		E9BE1CB21D6EF6960058823D /* XZBarChartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BE1CB11D6EF6960058823D /* XZBarChartCell.m */; };
 		E9C07B001D6D303B000C96E2 /* XZRadarChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = E9C07AFF1D6D303B000C96E2 /* XZRadarChartView.m */; };
 		E9C07B031D6D323D000C96E2 /* XZRadarModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E9C07B021D6D323D000C96E2 /* XZRadarModel.m */; };
 		E9E649961D6C13F80074FB05 /* XZBarChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E649951D6C13F80074FB05 /* XZBarChartView.m */; };
@@ -40,8 +41,10 @@
 		E93ACE061D6AFEFC005F8A83 /* XZChartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZChartViewController.m; sourceTree = "<group>"; };
 		E93ACE081D6B013C005F8A83 /* XZLineChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZLineChartView.h; sourceTree = "<group>"; };
 		E93ACE091D6B013C005F8A83 /* XZLineChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZLineChartView.m; sourceTree = "<group>"; };
-		E9BE1CAB1D6EF40F0058823D /* XZAxisCoordinateConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZAxisCoordinateConfig.h; sourceTree = "<group>"; };
-		E9BE1CAC1D6EF40F0058823D /* XZAxisCoordinateConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZAxisCoordinateConfig.m; sourceTree = "<group>"; };
+		E9BE1CAB1D6EF40F0058823D /* XZAxisCoordinateConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XZAxisCoordinateConfig.h; path = View/XZAxisCoordinateConfig.h; sourceTree = "<group>"; };
+		E9BE1CAC1D6EF40F0058823D /* XZAxisCoordinateConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XZAxisCoordinateConfig.m; path = View/XZAxisCoordinateConfig.m; sourceTree = "<group>"; };
+		E9BE1CB01D6EF6960058823D /* XZBarChartCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZBarChartCell.h; sourceTree = "<group>"; };
+		E9BE1CB11D6EF6960058823D /* XZBarChartCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZBarChartCell.m; sourceTree = "<group>"; };
 		E9C07AFE1D6D303B000C96E2 /* XZRadarChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZRadarChartView.h; sourceTree = "<group>"; };
 		E9C07AFF1D6D303B000C96E2 /* XZRadarChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZRadarChartView.m; sourceTree = "<group>"; };
 		E9C07B011D6D323D000C96E2 /* XZRadarModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZRadarModel.h; sourceTree = "<group>"; };
@@ -88,6 +91,8 @@
 		E93ACDE61D6AFB63005F8A83 /* XZChartDemo */ = {
 			isa = PBXGroup;
 			children = (
+				E9BE1CAF1D6EF66C0058823D /* Cell */,
+				E9BE1CAE1D6EF6580058823D /* Config */,
 				E93ACE011D6AFB98005F8A83 /* AppDelegate */,
 				E95011A31D6BE4F3004664E3 /* Category */,
 				E93ACE001D6AFB8B005F8A83 /* Model */,
@@ -132,8 +137,6 @@
 				E9FCECC01D6C8675006310B4 /* XZPieChartView.m */,
 				E9C07AFE1D6D303B000C96E2 /* XZRadarChartView.h */,
 				E9C07AFF1D6D303B000C96E2 /* XZRadarChartView.m */,
-				E9BE1CAB1D6EF40F0058823D /* XZAxisCoordinateConfig.h */,
-				E9BE1CAC1D6EF40F0058823D /* XZAxisCoordinateConfig.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -167,6 +170,24 @@
 			children = (
 			);
 			path = Category;
+			sourceTree = "<group>";
+		};
+		E9BE1CAE1D6EF6580058823D /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				E9BE1CAB1D6EF40F0058823D /* XZAxisCoordinateConfig.h */,
+				E9BE1CAC1D6EF40F0058823D /* XZAxisCoordinateConfig.m */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		E9BE1CAF1D6EF66C0058823D /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				E9BE1CB01D6EF6960058823D /* XZBarChartCell.h */,
+				E9BE1CB11D6EF6960058823D /* XZBarChartCell.m */,
+			);
+			name = Cell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,6 +261,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9BE1CB21D6EF6960058823D /* XZBarChartCell.m in Sources */,
 				E9C07B031D6D323D000C96E2 /* XZRadarModel.m in Sources */,
 				E9E6499C1D6C51C40074FB05 /* XZBarModel.m in Sources */,
 				E9BE1CAD1D6EF40F0058823D /* XZAxisCoordinateConfig.m in Sources */,

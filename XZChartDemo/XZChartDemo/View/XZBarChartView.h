@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "XZAxisCoordinateConfig.h"
+#import "XZBarModel.h"
 
 @interface XZBarView : UIView
 
@@ -23,6 +24,6 @@
  *
  *  @return self
  */
-- (id)initWithFrame:(CGRect)frame withAxisCoordinateConfig:(XZAxisCoordinateConfig *)axisCoordinateConfig withData:(NSArray *)dataArray;
+- (id)initWithFrame:(CGRect)frame withAxisCoordinateConfig:(XZAxisCoordinateConfig *)axisCoordinateConfig withBarModel:(XZBarModel *)barModel;
 
 @end

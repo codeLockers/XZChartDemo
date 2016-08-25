@@ -7,8 +7,9 @@
 //
 
 #import "XZBarChartView.h"
-#import "XZBarModel.h"
+#import "XZBarChartCell.h"
 
+/*
 @interface XZBarView(){
     
     XZAxisCoordinateConfig *_axisCoordinateConfig;
@@ -80,6 +81,7 @@
  *
  *  @param dataArray 数据源
  */
+/*
 - (void)drawBarWithData:(NSArray *)dataArray{
 
     for (XZBarModel *barModel in dataArray) {
@@ -109,7 +111,7 @@
             [self.layer addSublayer:layer];
         }
     }
-}
+}*/
 
 /**
  *  根据每个点的值计算出他在坐标系中的位置
@@ -119,6 +121,7 @@
  *
  *  @return 坐标数组
  */
+/*
 - (NSMutableArray *)calculateCoordinateOfXValues:(NSArray *)xValues YValues:(NSArray *)yValues{
     
     NSMutableArray *pointArray = [NSMutableArray array];
@@ -145,17 +148,19 @@
 
 
 @end
+*/
 
-@interface XZBarChartView(){
+@interface XZBarChartView()<UICollectionViewDelegate,UICollectionViewDataSource>{
 
     XZAxisCoordinateConfig *_axisCoordinateConfig;
+    XZBarModel *_barModel;
 }
 
 @end
 
 @implementation XZBarChartView
 
-- (id)initWithFrame:(CGRect)frame withAxisCoordinateConfig:(XZAxisCoordinateConfig *)axisCoordinateConfig withData:(NSArray *)dataArray{
+- (id)initWithFrame:(CGRect)frame withAxisCoordinateConfig:(XZAxisCoordinateConfig *)axisCoordinateConfig withBarModel:(id)barModel{
 
     self = [super initWithFrame:frame];
     if (self) {
@@ -163,7 +168,32 @@
         self.backgroundColor = [UIColor whiteColor];
         
         _axisCoordinateConfig = axisCoordinateConfig;
+        _barModel = barModel;
         
+        UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+        layout.minimumLineSpacing = 0.0;
+        layout.minimumInteritemSpacing = 0.0;
+        layout.itemSize = CGSizeMake(_axisCoordinateConfig.barWidth+_axisCoordinateConfig.xDialSpace, frame.size.height);
+        
+        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        
+        UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(_axisCoordinateConfig.yAxisLeftMargin, 0, frame.size.width - _axisCoordinateConfig.yAxisLeftMargin, frame.size.height) collectionViewLayout:layout];
+        collectionView.backgroundColor = [UIColor clearColor];
+        
+        [collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass([UICollectionReusableView class])];
+        [collectionView registerClass:[XZBarChartCell class] forCellWithReuseIdentifier:NSStringFromClass([XZBarChartCell class])];
+        
+        collectionView.delegate = self;
+        collectionView.dataSource = self;
+        collectionView.showsVerticalScrollIndicator = NO;
+        collectionView.showsHorizontalScrollIndicator = NO;
+        collectionView.bounces = NO;
+        
+        [self addSubview:collectionView];
+        
+        
+#warning 被注视的方法只适合在数据量在百量极的情况下,不然内存会溢出并且会出现明显卡顿
+        /*
         UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(_axisCoordinateConfig.yAxisLeftMargin, 0, frame.size.width - _axisCoordinateConfig.yAxisLeftMargin, frame.size.height)];
         scrollView.contentSize = CGSizeMake(_axisCoordinateConfig.yAxisStartMargin + (_axisCoordinateConfig.xDialSpace+_axisCoordinateConfig.barWidth) * _axisCoordinateConfig.xAxisLabelArray.count, CGRectGetHeight(scrollView.frame));
         scrollView.bounces = NO;
@@ -174,6 +204,7 @@
         XZBarView *barView = [[XZBarView alloc] initWithFrame:CGRectMake(0, 0,scrollView.contentSize.width, frame.size.height) withAxisCoordinateConfig:axisCoordinateConfig withData:dataArray];
         
         [scrollView addSubview:barView];
+         */
     }
     return self;
 
@@ -216,5 +247,43 @@
         [dialStr drawInRect:CGRectMake((_axisCoordinateConfig.yAxisLeftMargin - size.width)/2.0f, dialPoint.y-size.height/2.0f, size.width, size.height) withAttributes:@{NSFontAttributeName:_axisCoordinateConfig.dialFont}];
     }
     CGContextStrokePath(context);
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+
+    return 10000;
+}
+
+-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    return CGSizeMake(_axisCoordinateConfig.xAxisStartMargin, CGRectGetHeight(collectionView.frame));
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
+
+    UICollectionReusableView *reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass([UICollectionReusableView class]) forIndexPath:indexPath];
+        reusableview.backgroundColor = [UIColor clearColor];
+    
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.lineWidth = _axisCoordinateConfig.lineWidth;
+    layer.strokeColor = _axisCoordinateConfig.color.CGColor;
+    
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(0, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
+    [path addLineToPoint:CGPointMake(_axisCoordinateConfig.barWidth, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
+    layer.path = path.CGPath;
+    [reusableview.layer addSublayer:layer];
+    return reusableview;
+
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+
+    XZBarChartCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([XZBarChartCell class]) forIndexPath:indexPath];
+    cell.axisCoordinateConfig = _axisCoordinateConfig;
+    cell.backgroundColor = [UIColor clearColor];
+    [cell setUpCellWithAxisLabel:_axisCoordinateConfig.xAxisLabelArray[indexPath.row] yValue:((NSString *)_barModel.yValues[indexPath.row]).floatValue];
+    
+    return cell;
 }
 @end
