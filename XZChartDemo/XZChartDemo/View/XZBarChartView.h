@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "XZAxisView.h"
+#import "XZAxisCoordinateConfig.h"
 
-@interface XZBarView : XZAxisView
+@interface XZBarView : UIView
 
 @end
 
-@interface XZBarChartView : UIScrollView
+@interface XZBarChartView : UIView
 /**
  *  创建折线统计图
  *

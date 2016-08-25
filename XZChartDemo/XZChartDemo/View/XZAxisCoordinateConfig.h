@@ -1,11 +1,12 @@
 //
-//  XZAxisView.h
+//  XZAxisCoordinateConfig.h
 //  XZChartDemo
 //
-//  Created by 徐章 on 16/8/23.
+//  Created by 徐章 on 16/8/25.
 //  Copyright © 2016年 徐章. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 /*
  用于配置坐标轴的相关设置,X轴可以设置每个单位的长度越界了则可以拖动,Y轴高度固定,每个单位的长度根据刻度的多少平均分配,最小值与scrollView等宽
@@ -41,10 +42,4 @@
 @property (nonatomic, strong) NSArray *yAxisLabelArray;
 /** X轴刻度数组*/
 @property (nonatomic, strong) NSArray *xAxisLabelArray;
-
-@end
-
-
-@interface XZAxisView : UIView
-@property (nonatomic, strong) XZAxisCoordinateConfig *axisCoordinateConfig;
 @end

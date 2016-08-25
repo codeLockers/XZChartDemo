@@ -16,6 +16,7 @@
 #import "XZRadarChartView.h"
 #import "XZRadarModel.h"
 
+
 @interface XZChartViewController ()
 
 @end
@@ -26,8 +27,7 @@
     [super viewDidLoad];
     
     [self loadUI];
-    
-    // Do any additional setup after loading the view.
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -64,24 +64,29 @@
  */
 - (void)loadLineChart{
     
+    //一万条数据测试
+    NSMutableArray *xTestArray = [NSMutableArray arrayWithCapacity:10000];
+    NSMutableArray *yTestArray = [NSMutableArray arrayWithCapacity:10000];
+    for (NSInteger i=0; i<10000; i++) {
+        
+        [xTestArray addObject:[NSString stringWithFormat:@"%ld",(long)(2000+i)]];
+        [yTestArray addObject:[NSString stringWithFormat:@"%ld",(long)(arc4random()%60)]];
+    }
+    
     //配置折线数据
     XZLineModel *lineModel1 = [[XZLineModel alloc] init];
     lineModel1.lineColor    = [UIColor redColor];
-    lineModel1.xValues      = @[@"2001",@"2002",@"2003",@"2004",@"2005",@"2006",@"2007",@"2008",@"2009",@"2010",@"2011"];
-    lineModel1.yValues      = @[@"33",@"10",@"25",@"55",@"16",@"22",@"44",@"56",@"22",@"13",@"60"];
-
-    XZLineModel *lineModel2 = [[XZLineModel alloc] init];
-    lineModel2.lineColor    = [UIColor blackColor];
-    lineModel2.xValues      = @[@"2001",@"2002",@"2003",@"2004",@"2005",@"2006",@"2007",@"2008",@"2009",@"2010",@"2011"];
-    lineModel2.yValues      = @[@"30",@"19",@"35",@"15",@"10",@"32",@"41",@"16",@"42",@"53",@"40"];
+    lineModel1.xValues      =xTestArray;
+    lineModel1.yValues      = yTestArray;
     
     //配置坐标轴数据
     XZAxisCoordinateConfig *axisCoordinateConfig = [[XZAxisCoordinateConfig alloc] init];
-    axisCoordinateConfig.yAxisLabelArray         = @[@"10",@"20",@"30",@"40",@"50",@"60"];
+    axisCoordinateConfig.yAxisStartMargin= 0.0f;
+    axisCoordinateConfig.yAxisLabelArray         = @[@"0",@"10",@"20",@"30",@"40",@"50",@"60"];
     /** 通常情况下X轴的刻度看数据内容*/
-    axisCoordinateConfig.xAxisLabelArray         = lineModel1.xValues;
+    axisCoordinateConfig.xAxisLabelArray         = xTestArray;
     
-    XZLineChartView *lineChartView = [[XZLineChartView alloc] initWithFrame:CGRectMake(10, 100, [UIScreen mainScreen].bounds.size.width - 20.0f, 250.0f) withAxisCoordinateConfig:axisCoordinateConfig withData:@[lineModel1,lineModel2]];
+    XZLineChartView *lineChartView = [[XZLineChartView alloc] initWithFrame:CGRectMake(10, 100, [UIScreen mainScreen].bounds.size.width - 20.0f, 250.0f) withAxisCoordinateConfig:axisCoordinateConfig withData:@[lineModel1]];
     [self.view addSubview:lineChartView];
 }
 
@@ -93,13 +98,13 @@
     //配置坐标轴数据
     XZAxisCoordinateConfig *axisCoordinateConfig = [[XZAxisCoordinateConfig alloc] init];
     axisCoordinateConfig.yAxisLabelArray         = @[@"10",@"20",@"30",@"40",@"50",@"60"];
-    axisCoordinateConfig.xAxisLabelArray         = @[@"2000",@"2001",@"2002",@"2003",@"2004",@"2005",@"2006",@"2007",@"2008",@"2009",@"2010"];
-    axisCoordinateConfig.xDialSpace              = 20.0f;
+    axisCoordinateConfig.xAxisLabelArray         = @[@"2000",@"2001",@"2002",@"2003",@"2004",@"2005",@"2006",@"2007",@"2008",@"2009",@"2010",@"2011",@"2012",@"2013",@"2014",@"2015",@"2016",@"2017",@"2018"];
+    axisCoordinateConfig.xDialSpace              = 10.0f;
     
     //配置折线数据
     XZBarModel *barModel = [[XZBarModel alloc] init];
-    barModel.xValues     = @[@"2000",@"2001",@"2002",@"2003",@"2004",@"2005",@"2006",@"2007",@"2008",@"2009",@"2010"];
-    barModel.yValues     = @[@"30",@"19",@"35",@"15",@"10",@"32",@"41",@"16",@"42",@"53",@"40"];
+    barModel.xValues     = @[@"2000",@"2001",@"2002",@"2003",@"2004",@"2005",@"2006",@"2007",@"2008",@"2009",@"2010",@"2011",@"2012",@"2013",@"2014",@"2015",@"2016",@"2017",@"2018"];
+    barModel.yValues     = @[@"30",@"19",@"35",@"15",@"10",@"32",@"41",@"16",@"42",@"53",@"40",@"15",@"10",@"32",@"41",@"16",@"42",@"53",@"40",@"42",@"53",@"40"];
     
     XZBarChartView *barChartView = [[XZBarChartView alloc] initWithFrame:CGRectMake(10, 100, [UIScreen mainScreen].bounds.size.width - 20.0f, 250.0f) withAxisCoordinateConfig:axisCoordinateConfig withData:@[barModel]];
     [self.view addSubview:barChartView];

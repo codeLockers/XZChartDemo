@@ -8,7 +8,11 @@
 
 #import "XZLineChartView.h"
 #import "XZLineModel.h"
-@interface XZLineView()
+@interface XZLineView(){
+
+    XZAxisCoordinateConfig *_axisCoordinateConfig;
+    NSArray *_dataArray;
+}
 
 @end
 
@@ -19,12 +23,56 @@
     self = [super initWithFrame:frame];
     if (self) {
         
-        self.axisCoordinateConfig = axisCoordinateConfig;
-        self.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = [UIColor clearColor];
+        _axisCoordinateConfig = axisCoordinateConfig;
+        _dataArray = dataArray;
+        
+        [self loadXAxisWithFrame:frame];
+        
         [self drawLineWithData:dataArray];
     }
     return self;
 }
+
+- (void)loadXAxisWithFrame:(CGRect)frame{
+    //坐标原点
+    CGPoint originPoint = CGPointMake(0, frame.size.height - _axisCoordinateConfig.xAxisBottomMargin);
+    CAShapeLayer *xAxisLayer = [CAShapeLayer layer];
+    xAxisLayer.lineWidth = _axisCoordinateConfig.lineWidth;
+    xAxisLayer.strokeColor = _axisCoordinateConfig.color.CGColor;
+    xAxisLayer.fillColor = [UIColor clearColor].CGColor;
+    
+    UIBezierPath *xAxisPath = [UIBezierPath bezierPath];
+    [xAxisPath moveToPoint:originPoint];
+    [xAxisPath addLineToPoint:CGPointMake(frame.size.width, originPoint.y)];
+    //绘制X轴尖头
+    [xAxisPath addLineToPoint:CGPointMake(frame.size.width - _axisCoordinateConfig.arrowVerticalOffset, originPoint.y - _axisCoordinateConfig.arrowHorizontalOffset)];
+    [xAxisPath moveToPoint:CGPointMake(frame.size.width, originPoint.y)];
+    [xAxisPath addLineToPoint:CGPointMake(frame.size.width - _axisCoordinateConfig.arrowVerticalOffset, originPoint.y + _axisCoordinateConfig.arrowHorizontalOffset)];
+    
+    //绘制X轴上的刻度
+    for (NSInteger i = 0; i < _axisCoordinateConfig.xAxisLabelArray.count ; i ++) {
+//        NSLog(@"%ld",(long)i);
+        CGPoint dialPoint = CGPointMake(originPoint.x + _axisCoordinateConfig.xAxisStartMargin + _axisCoordinateConfig.xDialSpace*i, originPoint.y);
+
+        [xAxisPath moveToPoint:CGPointMake(dialPoint.x, dialPoint.y)];
+        [xAxisPath addLineToPoint:CGPointMake(dialPoint.x, dialPoint.y - _axisCoordinateConfig.dialLegth)];
+
+        NSString *dialStr = _axisCoordinateConfig.xAxisLabelArray[i];
+        CGSize size = [dialStr sizeWithAttributes:@{NSFontAttributeName:_axisCoordinateConfig.dialFont}];
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(dialPoint.x - size.width/2.0f, dialPoint.y, size.width, size.height)];
+        label.text = dialStr;
+        label.textColor = _axisCoordinateConfig.color;
+        label.font = _axisCoordinateConfig.dialFont;
+        [self addSubview:label];
+    }
+    
+    xAxisLayer.path = xAxisPath.CGPath;
+    
+    [self.layer addSublayer:xAxisLayer];
+}
+
 
 #pragma mark - Private_Methods
 /**
@@ -89,17 +137,22 @@
 
     NSMutableArray *pointArray = [NSMutableArray array];
     
-    CGFloat yDialSpace = (self.frame.size.height - self.axisCoordinateConfig.xAxisBottomMargin - self.axisCoordinateConfig.yAxisStartMargin - self.axisCoordinateConfig.arrowVerticalOffset)/self.axisCoordinateConfig.yAxisLabelArray.count;
+    CGFloat yDialSpace = (self.frame.size.height - _axisCoordinateConfig.xAxisBottomMargin - _axisCoordinateConfig.yAxisStartMargin - _axisCoordinateConfig.arrowVerticalOffset)/_axisCoordinateConfig.yAxisLabelArray.count;
+    
+    CGFloat yAxisValueDiff = ((NSString *)_axisCoordinateConfig.yAxisLabelArray[1]).floatValue - ((NSString *)_axisCoordinateConfig.yAxisLabelArray[0]).floatValue;
+    CGFloat xAxisValueDiff = ((NSString *)_axisCoordinateConfig.xAxisLabelArray[1]).floatValue - ((NSString *)_axisCoordinateConfig.xAxisLabelArray[0]).floatValue;
     
     for (NSInteger i = 0; i < xValues.count; i++) {
 
         CGFloat yValue = ((NSString *)yValues[i]).floatValue;
-        CGFloat xPoint = self.axisCoordinateConfig.yAxisLeftMargin + self.axisCoordinateConfig.xAxisStartMargin + self.axisCoordinateConfig.xDialSpace*i;
+        CGFloat xValue = ((NSString *)xValues[i]).floatValue;
+    
+        CGFloat yPoint = (yValue - ((NSString *)_axisCoordinateConfig.yAxisLabelArray.firstObject).floatValue)/yAxisValueDiff * yDialSpace;
+        yPoint = self.frame.size.height - yPoint - _axisCoordinateConfig.xAxisBottomMargin - _axisCoordinateConfig.yAxisStartMargin;
         
-        CGFloat yAxisValueDiff = ((NSString *)self.axisCoordinateConfig.yAxisLabelArray[1]).floatValue - ((NSString *)self.axisCoordinateConfig.yAxisLabelArray[0]).floatValue;
+        CGFloat xPoint = (xValue - ((NSString *)_axisCoordinateConfig.xAxisLabelArray.firstObject).floatValue)/xAxisValueDiff * _axisCoordinateConfig.xDialSpace;
+        xPoint = xPoint + _axisCoordinateConfig.xAxisStartMargin;
         
-        CGFloat yPoint = (yValue - ((NSString *)self.axisCoordinateConfig.yAxisLabelArray.firstObject).floatValue)/yAxisValueDiff * yDialSpace;
-        yPoint = self.frame.size.height - yPoint - self.axisCoordinateConfig.xAxisBottomMargin - self.axisCoordinateConfig.yAxisStartMargin;
         
         CGPoint point = CGPointMake(xPoint, yPoint);
         [pointArray addObject:[NSValue valueWithCGPoint:point]];
@@ -110,6 +163,12 @@
 
 @end
 
+@interface XZLineChartView (){
+
+    XZAxisCoordinateConfig *_axisCoordinateConfig;
+}
+
+@end
 
 @implementation XZLineChartView
 
@@ -117,21 +176,63 @@
 
     self = [super initWithFrame:frame];
     if (self) {
+
+        self.backgroundColor = [UIColor whiteColor];
         
-        self.bounces = NO;
-        self.showsVerticalScrollIndicator = NO;
-        self.showsHorizontalScrollIndicator = NO;
+        _axisCoordinateConfig = axisCoordinateConfig;
         
-        //坐标系的横坐标轴最短于View等宽
-        CGFloat width = axisCoordinateConfig.xAxisLabelArray.count * axisCoordinateConfig.xDialSpace + axisCoordinateConfig.xAxisStartMargin + axisCoordinateConfig.yAxisLeftMargin;
-        width = (width < frame.size.width) ? frame.size.width: width;
+        UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(_axisCoordinateConfig.yAxisLeftMargin, 0, frame.size.width - _axisCoordinateConfig.yAxisLeftMargin, frame.size.height)];
+        scrollView.contentSize = CGSizeMake(_axisCoordinateConfig.xDialSpace * _axisCoordinateConfig.xAxisLabelArray.count, CGRectGetHeight(scrollView.frame));
+        scrollView.bounces = NO;
+        scrollView.showsVerticalScrollIndicator = NO;
+        scrollView.showsHorizontalScrollIndicator = NO;
+        [self addSubview:scrollView];
         
-        XZLineView *lineView = [[XZLineView alloc] initWithFrame:CGRectMake(0, 0,width, frame.size.height) withAxisCoordinateConfig:axisCoordinateConfig withData:dataArray];
+        XZLineView *lineView =[[XZLineView alloc] initWithFrame:CGRectMake(0, 0, scrollView.contentSize.width, CGRectGetHeight(scrollView.frame)) withAxisCoordinateConfig:axisCoordinateConfig withData:dataArray];
+        [scrollView addSubview:lineView];
         
-        [self addSubview:lineView];
-        self.contentSize = CGSizeMake(width, frame.size.height);
         
     }
     return self;
 }
+
+- (void)drawRect:(CGRect)rect{
+
+    //绘制坐标轴
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    //设置坐标轴宽度
+    CGContextSetLineWidth(context, _axisCoordinateConfig.lineWidth);
+    //设置坐标轴颜色
+    CGContextSetStrokeColorWithColor(context, _axisCoordinateConfig.color.CGColor);
+    
+    //坐标原点
+    CGPoint originPoint = CGPointMake(_axisCoordinateConfig.yAxisLeftMargin, rect.size.height - _axisCoordinateConfig.xAxisBottomMargin);
+    CGContextMoveToPoint(context, originPoint.x, originPoint.y);
+    
+    //绘制Y轴
+    CGContextAddLineToPoint(context, originPoint.x, 0);
+    
+    //绘制Y轴尖头
+    CGContextAddLineToPoint(context, originPoint.x - _axisCoordinateConfig.arrowHorizontalOffset, _axisCoordinateConfig.arrowVerticalOffset);
+    CGContextMoveToPoint(context, originPoint.x, 0);
+    CGContextAddLineToPoint(context, originPoint.x + _axisCoordinateConfig.arrowHorizontalOffset, _axisCoordinateConfig.arrowVerticalOffset);
+    
+    //每个刻度的间隔
+    CGFloat yDistance = (rect.size.height - _axisCoordinateConfig.xAxisBottomMargin - _axisCoordinateConfig.yAxisStartMargin - _axisCoordinateConfig.arrowVerticalOffset)/_axisCoordinateConfig.yAxisLabelArray.count;
+    
+    //绘制Y轴上刻度
+    for (NSInteger i = 0; i < _axisCoordinateConfig.yAxisLabelArray.count; i++) {
+        
+        CGPoint dialPoint = CGPointMake(originPoint.x, originPoint.y - _axisCoordinateConfig.yAxisStartMargin - yDistance*i);
+        CGContextMoveToPoint(context, dialPoint.x, dialPoint.y);
+        CGContextAddLineToPoint(context, dialPoint.x + _axisCoordinateConfig.dialLegth, dialPoint.y);
+        
+        NSString *dialStr = _axisCoordinateConfig.yAxisLabelArray[i];
+        CGSize size = [dialStr sizeWithAttributes:@{NSFontAttributeName:_axisCoordinateConfig.dialFont}];
+        
+        [dialStr drawInRect:CGRectMake((_axisCoordinateConfig.yAxisLeftMargin - size.width)/2.0f, dialPoint.y-size.height/2.0f, size.width, size.height) withAttributes:@{NSFontAttributeName:_axisCoordinateConfig.dialFont}];
+    }
+    CGContextStrokePath(context);
+}
+
 @end
