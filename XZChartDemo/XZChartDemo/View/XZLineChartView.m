@@ -8,6 +8,10 @@
 
 #import "XZLineChartView.h"
 #import "XZLineModel.h"
+#import "XZLineChartCell.h"
+#import "XZYAxisView.h"
+#define MC_RandomColor              [UIColor colorWithHue:(arc4random()%256/256.0) saturation:(arc4random()%128/256.0)+0.5 brightness:(arc4random()%128/256.0)+0.5 alpha:1];
+/*
 @interface XZLineView(){
 
     XZAxisCoordinateConfig *_axisCoordinateConfig;
@@ -80,6 +84,7 @@
  *
  *  @param dataArray 数据源
  */
+/*
 - (void)drawLineWithData:(NSArray *)dataArray{
 
     for (XZLineModel *lineModel in dataArray) {
@@ -124,7 +129,7 @@
         
     }
 }
-
+*/
 /**
  *  根据每个点的值计算出他在坐标系中的位置
  *
@@ -133,6 +138,7 @@
  *
  *  @return 坐标数组
  */
+/*
 - (NSMutableArray *)calculateCoordinateOfXValues:(NSArray *)xValues YValues:(NSArray *)yValues{
 
     NSMutableArray *pointArray = [NSMutableArray array];
@@ -162,10 +168,11 @@
 }
 
 @end
-
-@interface XZLineChartView (){
+*/
+@interface XZLineChartView ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>{
 
     XZAxisCoordinateConfig *_axisCoordinateConfig;
+    NSArray *_dataArray;
 }
 
 @end
@@ -180,7 +187,34 @@
         self.backgroundColor = [UIColor whiteColor];
         
         _axisCoordinateConfig = axisCoordinateConfig;
+        _dataArray = dataArray;
         
+        UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+        layout.minimumLineSpacing          = 0.0;
+        layout.minimumInteritemSpacing     = 0.0;
+        layout.itemSize                    = CGSizeMake(_axisCoordinateConfig.xDialSpace, frame.size.height);
+        layout.scrollDirection             = UICollectionViewScrollDirectionHorizontal;
+        
+        UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(_axisCoordinateConfig.yAxisLeftMargin, 0, frame.size.width - _axisCoordinateConfig.yAxisLeftMargin, frame.size.height) collectionViewLayout:layout];
+        collectionView.backgroundColor = [UIColor clearColor];
+        
+        [collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass([UICollectionReusableView class])];
+        [collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:NSStringFromClass([UICollectionReusableView class])];
+        [collectionView registerClass:[XZLineChartCell class] forCellWithReuseIdentifier:NSStringFromClass([XZLineChartCell class])];
+        
+        collectionView.delegate                       = self;
+        collectionView.dataSource                     = self;
+        collectionView.showsVerticalScrollIndicator   = NO;
+        collectionView.showsHorizontalScrollIndicator = NO;
+        collectionView.bounces                        = NO;
+        
+        [self addSubview:collectionView];
+        
+        //绘制Y轴
+        XZYAxisView *yAxisView = [[XZYAxisView alloc] initWithFrame:CGRectMake(0, 0, _axisCoordinateConfig.yAxisLeftMargin+MAX(_axisCoordinateConfig.dialLegth, _axisCoordinateConfig.arrowHorizontalOffset),frame.size.height) withAxisCoordinateModel:_axisCoordinateConfig];
+        [self addSubview:yAxisView];
+        
+/*
         UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(_axisCoordinateConfig.yAxisLeftMargin, 0, frame.size.width - _axisCoordinateConfig.yAxisLeftMargin, frame.size.height)];
         scrollView.contentSize = CGSizeMake(_axisCoordinateConfig.xDialSpace * _axisCoordinateConfig.xAxisLabelArray.count, CGRectGetHeight(scrollView.frame));
         scrollView.bounces = NO;
@@ -190,12 +224,12 @@
         
         XZLineView *lineView =[[XZLineView alloc] initWithFrame:CGRectMake(0, 0, scrollView.contentSize.width, CGRectGetHeight(scrollView.frame)) withAxisCoordinateConfig:axisCoordinateConfig withData:dataArray];
         [scrollView addSubview:lineView];
-        
-        
+*/
     }
     return self;
 }
 
+/*
 - (void)drawRect:(CGRect)rect{
 
     //绘制坐标轴
@@ -234,5 +268,133 @@
     }
     CGContextStrokePath(context);
 }
+*/
 
+#pragma mark - UICollectionView_DataSource
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+
+    return _axisCoordinateConfig.xAxisLabelArray.count-1;
+}
+
+-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    return CGSizeMake(_axisCoordinateConfig.xAxisStartMargin + _axisCoordinateConfig.xDialSpace/2.0f, CGRectGetHeight(collectionView.frame));
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
+    
+    CGFloat width = (_axisCoordinateConfig.yAxisLeftMargin + (_axisCoordinateConfig.xAxisStartMargin + _axisCoordinateConfig.xDialSpace/2.0f) + _axisCoordinateConfig.xDialSpace * (_axisCoordinateConfig.xAxisLabelArray.count - 1));
+    
+    width = width >= CGRectGetWidth(collectionView.frame) ? _axisCoordinateConfig.arrowVerticalOffset : CGRectGetWidth(self.frame) - width;
+    
+    return CGSizeMake(width, CGRectGetHeight(collectionView.frame));
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
+    
+    UICollectionReusableView *reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:NSStringFromClass([UICollectionReusableView class]) forIndexPath:indexPath];
+    
+    if (kind == UICollectionElementKindSectionHeader)
+        return [self fillCollectionView:collectionView reuseHeaderView:reusableview];
+    else if (kind == UICollectionElementKindSectionFooter)
+        return [self fillCollectionView:collectionView reuseFooterView:reusableview];
+    return reusableview;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+
+    XZLineChartCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([XZLineChartCell class]) forIndexPath:indexPath];
+    
+    XZLineModel *lineModel = _dataArray[0];
+    [cell setUpCellAtIndexPath:indexPath axisCoordinateConfig:_axisCoordinateConfig lineModel:lineModel];
+    return cell;
+}
+
+#pragma mark - Private_Methods
+/**
+ *  根据相应的值计算出在坐标系中的Y轴坐标
+ *
+ *  @param yValue Y轴的值
+ *
+ *  @return Y轴的坐标
+ */
+- (CGFloat)calculateCoordinateOfYValue:(CGFloat)yValue{
+    
+    CGFloat yDialSpace = (self.frame.size.height - _axisCoordinateConfig.xAxisBottomMargin - _axisCoordinateConfig.yAxisStartMargin - _axisCoordinateConfig.arrowVerticalOffset)/_axisCoordinateConfig.yAxisLabelArray.count;
+    
+    CGFloat yAxisValueDiff = ((NSString *)_axisCoordinateConfig.yAxisLabelArray[1]).floatValue - ((NSString *)_axisCoordinateConfig.yAxisLabelArray[0]).floatValue;
+
+    CGFloat yPoint = (yValue - ((NSString *)_axisCoordinateConfig.yAxisLabelArray.firstObject).floatValue)/yAxisValueDiff * yDialSpace;
+    yPoint = self.frame.size.height - yPoint - _axisCoordinateConfig.xAxisBottomMargin - _axisCoordinateConfig.yAxisStartMargin;
+    return yPoint;
+}
+
+- (UICollectionReusableView *)fillCollectionView:(UICollectionView *)collectionView reuseHeaderView:(UICollectionReusableView *)reusableview{
+
+    NSString *labelStr = _axisCoordinateConfig.xAxisLabelArray[0];
+    CGSize size = [labelStr sizeWithAttributes:@{NSFontAttributeName : _axisCoordinateConfig.dialFont}];
+    //刻度标签
+    UILabel *label  = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, size.width, _axisCoordinateConfig.xAxisBottomMargin)];
+    label.center    = CGPointMake(_axisCoordinateConfig.xAxisStartMargin, CGRectGetHeight(collectionView.frame) - _axisCoordinateConfig.xAxisBottomMargin/2.0f);
+    label.textColor = _axisCoordinateConfig.color;
+    label.font      = _axisCoordinateConfig.dialFont;
+    label.text      = _axisCoordinateConfig.xAxisLabelArray[0];
+    [reusableview addSubview:label];
+
+    //坐标轴线条
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.lineWidth     = _axisCoordinateConfig.lineWidth;
+    layer.strokeColor   = _axisCoordinateConfig.color.CGColor;
+    layer.fillColor     = [UIColor clearColor].CGColor;
+
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(0, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
+    [path addLineToPoint:CGPointMake(_axisCoordinateConfig.xAxisStartMargin, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
+    [path addLineToPoint:CGPointMake(_axisCoordinateConfig.xAxisStartMargin, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin-_axisCoordinateConfig.dialLegth)];
+    [path moveToPoint:CGPointMake(_axisCoordinateConfig.xAxisStartMargin, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
+    [path addLineToPoint:CGPointMake(_axisCoordinateConfig.xAxisStartMargin+_axisCoordinateConfig.xDialSpace/2.0f, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
+    layer.path = path.CGPath;
+    [reusableview.layer addSublayer:layer];
+
+    //绘制第一条数据
+    XZLineModel *lineModel = _dataArray[0];
+    CGFloat yValue = ((NSString *)lineModel.yValues[0]).floatValue;
+    if (lineModel.yValues.count <= 1)
+        return reusableview;
+    CGFloat nextYValue = ((NSString *)lineModel.yValues[1]).floatValue;
+
+    CAShapeLayer *lineLayer = [CAShapeLayer layer];
+    lineLayer.lineWidth     = lineModel.lineWidth;
+    lineLayer.strokeColor   = lineModel.lineColor.CGColor;
+    lineLayer.fillColor     = [UIColor clearColor].CGColor;
+
+    UIBezierPath *linePath = [UIBezierPath bezierPath];
+    [linePath moveToPoint:CGPointMake(_axisCoordinateConfig.xAxisStartMargin, [self calculateCoordinateOfYValue:yValue])];
+    [linePath addLineToPoint:CGPointMake(_axisCoordinateConfig.xAxisStartMargin + _axisCoordinateConfig.xDialSpace/2.0f, [self calculateCoordinateOfYValue:(nextYValue+yValue)/2.0f])];
+    
+    lineLayer.path = linePath.CGPath;
+    [reusableview.layer addSublayer:lineLayer];
+    
+    return reusableview;
+}
+
+- (UICollectionReusableView *)fillCollectionView:(UICollectionView *)collectionView reuseFooterView:(UICollectionReusableView *)reusableview{
+
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.lineWidth = _axisCoordinateConfig.lineWidth;
+    layer.strokeColor = _axisCoordinateConfig.color.CGColor;
+    layer.fillColor = [UIColor clearColor].CGColor;
+    
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(0, CGRectGetHeight(collectionView.frame) - _axisCoordinateConfig.xAxisBottomMargin)];
+    CGPoint point = CGPointMake(CGRectGetWidth(reusableview.frame), CGRectGetHeight(collectionView.frame) - _axisCoordinateConfig.xAxisBottomMargin);
+    [path addLineToPoint:point];
+    [path addLineToPoint:CGPointMake(point.x - _axisCoordinateConfig.arrowVerticalOffset, point.y - _axisCoordinateConfig.arrowHorizontalOffset)];
+    [path moveToPoint:point];
+    [path addLineToPoint:CGPointMake(point.x - _axisCoordinateConfig.arrowVerticalOffset, point.y + _axisCoordinateConfig.arrowHorizontalOffset)];
+    
+    layer.path = path.CGPath;
+    [reusableview.layer addSublayer:layer];
+    return reusableview;
+}
 @end

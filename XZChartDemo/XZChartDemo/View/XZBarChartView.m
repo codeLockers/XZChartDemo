@@ -8,6 +8,7 @@
 
 #import "XZBarChartView.h"
 #import "XZBarChartCell.h"
+#import "XZYAxisView.h"
 
 /*
 @interface XZBarView(){
@@ -171,26 +172,26 @@
         _barModel = barModel;
         
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-        layout.minimumLineSpacing = 0.0;
-        layout.minimumInteritemSpacing = 0.0;
-        layout.itemSize = CGSizeMake(_axisCoordinateConfig.barWidth+_axisCoordinateConfig.xDialSpace, frame.size.height);
-        
-        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        layout.minimumLineSpacing          = 0.0;
+        layout.minimumInteritemSpacing     = 0.0;
+        layout.itemSize                    = CGSizeMake(_axisCoordinateConfig.barWidth+_axisCoordinateConfig.xDialSpace, frame.size.height);
+        layout.scrollDirection             = UICollectionViewScrollDirectionHorizontal;
         
         UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(_axisCoordinateConfig.yAxisLeftMargin, 0, frame.size.width - _axisCoordinateConfig.yAxisLeftMargin, frame.size.height) collectionViewLayout:layout];
-        collectionView.backgroundColor = [UIColor clearColor];
-        
         [collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass([UICollectionReusableView class])];
+        [collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:NSStringFromClass([UICollectionReusableView class])];
         [collectionView registerClass:[XZBarChartCell class] forCellWithReuseIdentifier:NSStringFromClass([XZBarChartCell class])];
-        
-        collectionView.delegate = self;
-        collectionView.dataSource = self;
-        collectionView.showsVerticalScrollIndicator = NO;
+        collectionView.backgroundColor                = [UIColor clearColor];
+        collectionView.delegate                       = self;
+        collectionView.dataSource                     = self;
+        collectionView.showsVerticalScrollIndicator   = NO;
         collectionView.showsHorizontalScrollIndicator = NO;
-        collectionView.bounces = NO;
-        
+        collectionView.bounces                        = NO;
         [self addSubview:collectionView];
         
+        //Y轴View
+        XZYAxisView *yAxixView = [[XZYAxisView alloc] initWithFrame:CGRectMake(0, 0, _axisCoordinateConfig.yAxisLeftMargin+MAX(_axisCoordinateConfig.dialLegth, _axisCoordinateConfig.arrowHorizontalOffset), frame.size.height) withAxisCoordinateModel:_axisCoordinateConfig];
+        [self addSubview:yAxixView];
         
 #warning 被注视的方法只适合在数据量在百量极的情况下,不然内存会溢出并且会出现明显卡顿
         /*
@@ -210,6 +211,7 @@
 
 }
 
+/*
 - (void)drawRect:(CGRect)rect{
     
     //绘制坐标轴
@@ -248,42 +250,58 @@
     }
     CGContextStrokePath(context);
 }
+ */
 
+#pragma mark - UIColectionView_DataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
 
-    return 10000;
+    return _axisCoordinateConfig.xAxisLabelArray.count;
 }
+
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
     return CGSizeMake(_axisCoordinateConfig.xAxisStartMargin, CGRectGetHeight(collectionView.frame));
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
+
+    CGFloat width = (_axisCoordinateConfig.yAxisLeftMargin + _axisCoordinateConfig.xAxisStartMargin + (_axisCoordinateConfig.xDialSpace + _axisCoordinateConfig.barWidth)*_axisCoordinateConfig.xAxisLabelArray.count);
+    
+    width = width >= CGRectGetWidth(collectionView.frame) ? _axisCoordinateConfig.arrowVerticalOffset : CGRectGetWidth(self.frame) - width;
+    
+    return CGSizeMake(width, CGRectGetHeight(collectionView.frame));
+
+}
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
 
-    UICollectionReusableView *reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass([UICollectionReusableView class]) forIndexPath:indexPath];
-        reusableview.backgroundColor = [UIColor clearColor];
+    UICollectionReusableView *reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:NSStringFromClass([UICollectionReusableView class]) forIndexPath:indexPath];
     
     CAShapeLayer *layer = [CAShapeLayer layer];
-    layer.lineWidth = _axisCoordinateConfig.lineWidth;
-    layer.strokeColor = _axisCoordinateConfig.color.CGColor;
+    layer.lineWidth     = _axisCoordinateConfig.lineWidth;
+    layer.strokeColor   = _axisCoordinateConfig.color.CGColor;
+    layer.fillColor     = [UIColor clearColor].CGColor;
     
     UIBezierPath *path = [UIBezierPath bezierPath];
     [path moveToPoint:CGPointMake(0, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
-    [path addLineToPoint:CGPointMake(_axisCoordinateConfig.barWidth, CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin)];
+    CGPoint point = CGPointMake(CGRectGetWidth(reusableview.frame), CGRectGetHeight(collectionView.frame)-_axisCoordinateConfig.xAxisBottomMargin);
+    [path addLineToPoint:point];
+    
+    if (kind == UICollectionElementKindSectionFooter) {
+        [path addLineToPoint:CGPointMake(point.x - _axisCoordinateConfig.arrowVerticalOffset, point.y - _axisCoordinateConfig.arrowHorizontalOffset)];
+        [path moveToPoint:point];
+        [path addLineToPoint:CGPointMake(point.x - _axisCoordinateConfig.arrowVerticalOffset, point.y + _axisCoordinateConfig.arrowHorizontalOffset)];
+    }
+    
     layer.path = path.CGPath;
     [reusableview.layer addSublayer:layer];
     return reusableview;
-
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
 
     XZBarChartCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([XZBarChartCell class]) forIndexPath:indexPath];
-    cell.axisCoordinateConfig = _axisCoordinateConfig;
-    cell.backgroundColor = [UIColor clearColor];
-    [cell setUpCellWithAxisLabel:_axisCoordinateConfig.xAxisLabelArray[indexPath.row] yValue:((NSString *)_barModel.yValues[indexPath.row]).floatValue];
-    
+    [cell setUpCellAtIndexPath:indexPath axisCoordinateConfig:_axisCoordinateConfig barModel:_barModel];
     return cell;
 }
 @end

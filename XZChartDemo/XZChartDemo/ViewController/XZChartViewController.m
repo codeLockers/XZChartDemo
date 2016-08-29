@@ -64,10 +64,10 @@
  */
 - (void)loadLineChart{
     
-    //一万条数据测试
-    NSMutableArray *xTestArray = [NSMutableArray arrayWithCapacity:10000];
-    NSMutableArray *yTestArray = [NSMutableArray arrayWithCapacity:10000];
-    for (NSInteger i=0; i<10000; i++) {
+    //十万条数据测试
+    NSMutableArray *xTestArray = [NSMutableArray array];
+    NSMutableArray *yTestArray = [NSMutableArray array];
+    for (NSInteger i=0; i<100000; i++) {
         
         [xTestArray addObject:[NSString stringWithFormat:@"%ld",(long)(2000+i)]];
         [yTestArray addObject:[NSString stringWithFormat:@"%ld",(long)(arc4random()%60)]];
@@ -82,6 +82,7 @@
     //配置坐标轴数据
     XZAxisCoordinateConfig *axisCoordinateConfig = [[XZAxisCoordinateConfig alloc] init];
     axisCoordinateConfig.yAxisStartMargin= 0.0f;
+    axisCoordinateConfig.xAxisStartMargin = 15.0f;
     axisCoordinateConfig.yAxisLabelArray         = @[@"0",@"10",@"20",@"30",@"40",@"50",@"60"];
     /** 通常情况下X轴的刻度看数据内容*/
     axisCoordinateConfig.xAxisLabelArray         = xTestArray;
@@ -96,14 +97,13 @@
 - (void)loadBarChart{
     
     //10W条数据测试
-    NSMutableArray *xTestArray = [NSMutableArray arrayWithCapacity:10000];
-    NSMutableArray *yTestArray = [NSMutableArray arrayWithCapacity:10000];
+    NSMutableArray *xTestArray = [NSMutableArray array];
+    NSMutableArray *yTestArray = [NSMutableArray array];
     for (NSInteger i=0; i<100000; i++) {
         
         [xTestArray addObject:[NSString stringWithFormat:@"%ld",(long)(2000+i)]];
         [yTestArray addObject:[NSString stringWithFormat:@"%ld",(long)(arc4random()%60)]];
     }
-    
     
     //配置坐标轴数据
     XZAxisCoordinateConfig *axisCoordinateConfig = [[XZAxisCoordinateConfig alloc] init];

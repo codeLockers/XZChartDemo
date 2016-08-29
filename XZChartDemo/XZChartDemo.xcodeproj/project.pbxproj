@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E93425121D701E330095E948 /* XZLineChartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E93425111D701E330095E948 /* XZLineChartCell.m */; };
 		E93ACDE91D6AFB63005F8A83 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E93ACDE81D6AFB63005F8A83 /* main.m */; };
 		E93ACDEC1D6AFB63005F8A83 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E93ACDEB1D6AFB63005F8A83 /* AppDelegate.m */; };
 		E93ACDF21D6AFB63005F8A83 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E93ACDF01D6AFB63005F8A83 /* Main.storyboard */; };
@@ -15,6 +16,7 @@
 		E93ACE041D6AFBEF005F8A83 /* XZMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E93ACE031D6AFBEF005F8A83 /* XZMainViewController.m */; };
 		E93ACE071D6AFEFC005F8A83 /* XZChartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E93ACE061D6AFEFC005F8A83 /* XZChartViewController.m */; };
 		E93ACE0A1D6B013C005F8A83 /* XZLineChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = E93ACE091D6B013C005F8A83 /* XZLineChartView.m */; };
+		E9BC57871D73C473009B9658 /* XZYAxisView.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BC57861D73C473009B9658 /* XZYAxisView.m */; };
 		E9BE1CAD1D6EF40F0058823D /* XZAxisCoordinateConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BE1CAC1D6EF40F0058823D /* XZAxisCoordinateConfig.m */; };
 		E9BE1CB21D6EF6960058823D /* XZBarChartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BE1CB11D6EF6960058823D /* XZBarChartCell.m */; };
 		E9C07B001D6D303B000C96E2 /* XZRadarChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = E9C07AFF1D6D303B000C96E2 /* XZRadarChartView.m */; };
@@ -27,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E93425101D701E330095E948 /* XZLineChartCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZLineChartCell.h; sourceTree = "<group>"; };
+		E93425111D701E330095E948 /* XZLineChartCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZLineChartCell.m; sourceTree = "<group>"; };
 		E93ACDE41D6AFB63005F8A83 /* XZChartDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XZChartDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E93ACDE81D6AFB63005F8A83 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E93ACDEA1D6AFB63005F8A83 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -41,6 +45,8 @@
 		E93ACE061D6AFEFC005F8A83 /* XZChartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZChartViewController.m; sourceTree = "<group>"; };
 		E93ACE081D6B013C005F8A83 /* XZLineChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZLineChartView.h; sourceTree = "<group>"; };
 		E93ACE091D6B013C005F8A83 /* XZLineChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZLineChartView.m; sourceTree = "<group>"; };
+		E9BC57851D73C473009B9658 /* XZYAxisView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZYAxisView.h; sourceTree = "<group>"; };
+		E9BC57861D73C473009B9658 /* XZYAxisView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XZYAxisView.m; sourceTree = "<group>"; };
 		E9BE1CAB1D6EF40F0058823D /* XZAxisCoordinateConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XZAxisCoordinateConfig.h; path = View/XZAxisCoordinateConfig.h; sourceTree = "<group>"; };
 		E9BE1CAC1D6EF40F0058823D /* XZAxisCoordinateConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XZAxisCoordinateConfig.m; path = View/XZAxisCoordinateConfig.m; sourceTree = "<group>"; };
 		E9BE1CB01D6EF6960058823D /* XZBarChartCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XZBarChartCell.h; sourceTree = "<group>"; };
@@ -129,6 +135,8 @@
 		E93ACDFF1D6AFB79005F8A83 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E9BC57851D73C473009B9658 /* XZYAxisView.h */,
+				E9BC57861D73C473009B9658 /* XZYAxisView.m */,
 				E9E649941D6C13F80074FB05 /* XZBarChartView.h */,
 				E9E649951D6C13F80074FB05 /* XZBarChartView.m */,
 				E93ACE081D6B013C005F8A83 /* XZLineChartView.h */,
@@ -186,6 +194,8 @@
 			children = (
 				E9BE1CB01D6EF6960058823D /* XZBarChartCell.h */,
 				E9BE1CB11D6EF6960058823D /* XZBarChartCell.m */,
+				E93425101D701E330095E948 /* XZLineChartCell.h */,
+				E93425111D701E330095E948 /* XZLineChartCell.m */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -264,6 +274,7 @@
 				E9BE1CB21D6EF6960058823D /* XZBarChartCell.m in Sources */,
 				E9C07B031D6D323D000C96E2 /* XZRadarModel.m in Sources */,
 				E9E6499C1D6C51C40074FB05 /* XZBarModel.m in Sources */,
+				E9BC57871D73C473009B9658 /* XZYAxisView.m in Sources */,
 				E9BE1CAD1D6EF40F0058823D /* XZAxisCoordinateConfig.m in Sources */,
 				E9FCECC41D6C8747006310B4 /* XZPieModel.m in Sources */,
 				E9E649991D6C182B0074FB05 /* XZLineModel.m in Sources */,
@@ -271,6 +282,7 @@
 				E93ACE0A1D6B013C005F8A83 /* XZLineChartView.m in Sources */,
 				E93ACE071D6AFEFC005F8A83 /* XZChartViewController.m in Sources */,
 				E9C07B001D6D303B000C96E2 /* XZRadarChartView.m in Sources */,
+				E93425121D701E330095E948 /* XZLineChartCell.m in Sources */,
 				E9E649961D6C13F80074FB05 /* XZBarChartView.m in Sources */,
 				E9FCECC11D6C8675006310B4 /* XZPieChartView.m in Sources */,
 				E93ACDE91D6AFB63005F8A83 /* main.m in Sources */,

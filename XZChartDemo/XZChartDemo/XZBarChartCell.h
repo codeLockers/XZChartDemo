@@ -8,11 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "XZAxisCoordinateConfig.h"
+#import "XZBarModel.h"
 
 @interface XZBarChartCell : UICollectionViewCell
 
-@property (nonatomic, strong) XZAxisCoordinateConfig *axisCoordinateConfig;
-
-- (void)setUpCellWithAxisLabel:(NSString *)xAxisLabel yValue:(CGFloat)yValue;
+- (void)setUpCellAtIndexPath:(NSIndexPath *)indexPath axisCoordinateConfig:(XZAxisCoordinateConfig *)axisCoordinateConfig barModel:(XZBarModel *)barModel;
 
 @end
